@@ -7,9 +7,19 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Load environment variables from .env file
+DotNetEnv.Env.Load();  
+Console.WriteLine("[DEBUG] ADMIN_PASSWORD=" + Environment.GetEnvironmentVariable("ADMIN_PASSWORD"));
+
+// Inject environment variables into configuration
+builder.Configuration["ConnectionStrings:DefaultConnection"] = Environment.GetEnvironmentVariable("DB_CONNECTION");
+builder.Configuration["SendGrid:ApiKey"] = Environment.GetEnvironmentVariable("SENDGRID_API_KEY");
+builder.Configuration["SendGrid:FromEmail"] = Environment.GetEnvironmentVariable("SENDGRID_FROM_EMAIL");
+builder.Configuration["SendGrid:FromName"] = Environment.GetEnvironmentVariable("SENDGRID_FROM_NAME");
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddRazorPages();     // Add this line
+builder.Services.AddRazorPages();     
 
 // Add the context to the service collection with a connection string
 builder.Services.AddDbContext<AppDbContext>(options =>

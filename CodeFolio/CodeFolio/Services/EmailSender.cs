@@ -8,6 +8,8 @@ namespace CodeFolio.Services;
 
 public class EmailSender : IEmailSender
 {
+    private readonly string _fromEmail;
+    private readonly string _fromName;
     private readonly string _sendGridApiKey;
     
     private readonly ILogger<EmailSender> _logger;
@@ -16,6 +18,13 @@ public class EmailSender : IEmailSender
     {
         _sendGridApiKey = configuration["SendGrid:ApiKey"] 
                           ?? throw new ArgumentNullException("SendGrid Key is missing");
+        
+        _fromEmail = configuration["SendGrid:FromEmail"] 
+                     ?? throw new ArgumentNullException("From Email is missing");
+
+        _fromName = configuration["SendGrid:FromName"] 
+                    ?? throw new ArgumentNullException("From Name is missing");
+        
         _logger = logger;
     }
 
@@ -27,7 +36,7 @@ public class EmailSender : IEmailSender
                 email, subject, DateTime.Now);
 
             var client = new SendGridClient(_sendGridApiKey);
-            var from = new EmailAddress("james.jones@georgebrown.ca", "CodeFolio Default Sender");
+            var from = new EmailAddress(_fromEmail, _fromName);
             var to = new EmailAddress(email);
             var msg = MailHelper
                 .CreateSingleEmail(from, to, subject, "Welcome to CodeFolio!", message);

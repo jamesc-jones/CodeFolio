@@ -12,46 +12,55 @@ public class DbInitializer
         var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
         string adminEmail = "admin@example.com";
-        string adminPassword = "Pippen$33scottie";
-
-        // Create Admin Role if it doesn't exist - Ensure that Admin role exists
-        if (!await roleManager.RoleExistsAsync("Admin"))
+        string adminPassword = Environment.GetEnvironmentVariable("ADMIN_PASSWORD");
+        Console.WriteLine($"[DEBUG] Loaded admin password: {adminPassword}");
+        
+        if (string.IsNullOrWhiteSpace(adminPassword))
         {
-            await roleManager.CreateAsync(new IdentityRole("Admin"));
+            throw new Exception("ADMIN_PASSWORD is not set in environment variables.");
         }
         
-        // Create User Role if it doesn't exist
-        if (!await roleManager.RoleExistsAsync("User"))
+        // Ensure roles exist
+        string[] roles = { "Admin", "User" };
+        foreach (var role in roles)
         {
-            await roleManager.CreateAsync(new IdentityRole("User"));
+            if (!await roleManager.RoleExistsAsync(role))
+            {
+                await roleManager.CreateAsync(new IdentityRole(role));
+            }
         }
-
-        // Delete existing admin user if it exists (force re-creation)
-        var existingUser = await userManager.FindByEmailAsync(adminEmail);
-        if (existingUser != null)
+        
+        var adminUser = await userManager.FindByEmailAsync(adminEmail);
+        
+        if (adminUser == null)
         {
-            await userManager.DeleteAsync(existingUser);
-        }
+            adminUser = new ApplicationUser
+            {
+                UserName = adminEmail,
+                Email = adminEmail,
+                EmailConfirmed = true,
+                FirstName = "Admin",
+                LastName = "User"
+            };
 
-        // Create new Admin user with claims
-        var user = new ApplicationUser
-        {
-            UserName = adminEmail,
-            Email = adminEmail,
-            EmailConfirmed = true,
-            FirstName = "Admin",
-            LastName = "User"
-        };
-        var result = await userManager.CreateAsync(user, adminPassword);
-        if (result.Succeeded)
-        {
-            await userManager.AddToRoleAsync(user, "Admin");
-
+            var result = await userManager.CreateAsync(adminUser, adminPassword);
+            if (!result.Succeeded)
+            {
+                throw new Exception("Failed to create Admin user: " + string.Join(", ", result.Errors.Select(e => e.Description)));
+            }
+            
+            
             // Add FirstName and LastName claims
-            await userManager.AddClaimAsync(user, new System.Security.Claims.Claim("FirstName", user.FirstName));
-            await userManager.AddClaimAsync(user, new System.Security.Claims.Claim("LastName", user.LastName));
+            await userManager.AddClaimAsync(adminUser, new System.Security.Claims.Claim("FirstName", adminUser.FirstName));
+            await userManager.AddClaimAsync(adminUser, new System.Security.Claims.Claim("LastName", adminUser.LastName));
+        }
+        
+        if (!await userManager.IsInRoleAsync(adminUser, "Admin"))
+        {
+            await userManager.AddToRoleAsync(adminUser, "Admin");
         }
     }
+    
     
     // Added this method to seed ResumeSections
     public static async Task SeedResumeSections(IServiceProvider serviceProvider)
