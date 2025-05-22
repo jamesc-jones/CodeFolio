@@ -18,6 +18,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Show current working directory
+        run: pwd
+
+      - name: List all files and folders recursively
+        run: ls -Rla
+
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v4
         with:
