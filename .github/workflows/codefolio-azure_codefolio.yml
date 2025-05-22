@@ -31,11 +31,11 @@ jobs:
 
       - name: Build with dotnet
         run: dotnet build CodeFolio.sln --configuration Release
-         working-directory:${{ github.workspace }}
+        working-directory: ${{ github.workspace }}
 
       - name: dotnet publish
         run: dotnet publish CodeFolio.sln -c Release -o ${{ github.workspace }}/publish
-        working-directory: ${{ github.workspace }}        
+        working-directory: ${{ github.workspace }}     
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
