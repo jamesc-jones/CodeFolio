@@ -22,7 +22,10 @@ jobs:
         run: pwd
 
       - name: List all files and folders recursively
-        run: ls -Rla
+        run: ls -Rla ${{ github.workspace }}/..
+
+      - name: Print github.workspace
+        run: echo "github.workspace = ${{ github.workspace }}"  
 
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v4
