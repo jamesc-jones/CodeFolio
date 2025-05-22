@@ -11,7 +11,7 @@ public class DbInitializer
         var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-        string adminEmail = "admin@example.com";
+        string adminEmail = Environment.GetEnvironmentVariable("ADMIN_EMAIL");
         string adminPassword = Environment.GetEnvironmentVariable("ADMIN_PASSWORD");
         Console.WriteLine($"[DEBUG] Loaded admin password: {adminPassword}");
         

@@ -67,7 +67,7 @@ using (var scope = app.Services.CreateScope())
             await roleManager.CreateAsync(new IdentityRole(role));
     }
 
-    var adminEmail = "admin@yourdomain.com";
+    string adminEmail = Environment.GetEnvironmentVariable("ADMIN_EMAIL");
     var adminUser = await userManager.FindByEmailAsync(adminEmail);
 
     if (adminUser != null && !(await userManager.IsInRoleAsync(adminUser, "Admin")))
