@@ -75,4 +75,4 @@ jobs:
         with:
           app-name: 'CodeFolio'
           package: .
-          
+          slot-name: 'production'
