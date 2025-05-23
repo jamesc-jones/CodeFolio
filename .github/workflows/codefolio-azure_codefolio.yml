@@ -37,7 +37,7 @@ jobs:
         working-directory: ${{ github.workspace }}/CodeFolio-fresh
 
       - name: dotnet publish
-        run: dotnet publish CodeFolio.sln -c Release -o ${{ github.workspace }}/publish
+        run: dotnet publish ./CodeFolio/CodeFolio.csproj -c Release -o ${{ github.workspace }}/publish
         working-directory: ${{ github.workspace }}/CodeFolio-fresh     
 
       - name: Upload artifact for deployment job
