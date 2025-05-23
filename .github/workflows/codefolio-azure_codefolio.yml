@@ -78,6 +78,6 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'codefolio-james'
-          resource-group: 'codefolio-james_group' 
+          resource-group-name: 'codefolio-james_group' 
           package: ./publish
           slot-name: 'production'
