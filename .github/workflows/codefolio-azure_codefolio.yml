@@ -63,6 +63,9 @@ jobs:
           name: .net-app
           path: ./publish
 
+      - name: List published files before deploy
+        run: ls -Rla ./publish    
+
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
